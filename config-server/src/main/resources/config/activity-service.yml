@@ -4,14 +4,14 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb+srv://pasindu:pasindu@cluster0.gxyczhs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-      database: fitness_app
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_NAME}
 
   rabbitmq:
     host: localhost
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
 
 server:

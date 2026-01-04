@@ -21,6 +21,7 @@ export const authConfig = {
   // Extra parameters to ensure proper auth flow
   extraParams: {
     prompt: "login",
+
   },
 
   registrationEndpoint:

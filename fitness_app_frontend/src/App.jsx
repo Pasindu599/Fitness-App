@@ -1,4 +1,4 @@
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { useContext, useEffect, useCallback } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
 import {
@@ -12,9 +12,58 @@ import { useDispatch } from "react-redux";
 import { setCredentials } from "./store/authSlice";
 import { useState } from "react";
 
+import Layout from "./components/Layout";
+import Dashboard from "./components/Dashboard";
 import ActivityForm from "./components/ActivityForm";
 import ActivityList from "./components/ActivityList";
 import ActivityDetail from "./components/ActivityDetail";
+import Analytics from "./components/Analytics";
+
+// Create a custom theme
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#667eea',
+    },
+    secondary: {
+      main: '#764ba2',
+    },
+    background: {
+      default: '#f5f7fa',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h4: {
+      fontWeight: 700,
+    },
+    h6: {
+      fontWeight: 600,
+    },
+  },
+  shape: {
+    borderRadius: 12,
+  },
+  components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          borderRadius: 12,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+          borderRadius: 8,
+        },
+      },
+    },
+  },
+});
 
 function App() {
   const {
@@ -28,19 +77,6 @@ function App() {
   const dispatch = useDispatch();
   const [authReady, setAuthReady] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  const ActivityPage = () => {
-    return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <ActivityForm
-          onActivityAdded={() => {
-            window.location.reload();
-          }}
-        />
-        <ActivityList />
-      </Box>
-    );
-  };
 
   useEffect(() => {
     if (token) {
@@ -88,65 +124,99 @@ function App() {
   });
 
   return (
-    <BrowserRouter>
-      <Box
-        sx={{
-          padding: 3,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h4" sx={{ marginBottom: 2 }}>
-          Fitness App
-        </Typography>
-
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
         {token ? (
-          <Box>
+          <Layout>
             <Routes>
-              <Route path="/activities" element={<ActivityPage />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/activities" element={<ActivityList />} />
+              <Route path="/activities/new" element={<ActivityForm onActivityAdded={() => window.location.reload()} />} />
               <Route path="/activities/:id" element={<ActivityDetail />} />
-              <Route
-                path="/"
-                element={
-                  token ? (
-                    <Navigate to="/activities" replace />
-                  ) : (
-                    <div>
-                      Welcome to the Fitness App Please login to continue
-                    </div>
-                  )
-                }
-              />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
             </Routes>
-          </Box>
+          </Layout>
         ) : (
-          <Box>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleLogin}
-              disabled={isLoggingIn}
-              sx={{ padding: "10px 20px", fontSize: "16px" }}
+          <Box
+            sx={{
+              minHeight: '100vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white'
+            }}
+          >
+            <Box
+              sx={{
+                textAlign: 'center',
+                p: 4,
+                maxWidth: 400,
+                bgcolor: 'rgba(255,255,255,0.1)',
+                borderRadius: 3,
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}
             >
-              {isLoggingIn ? "Logging in..." : "Login"}
-            </Button>
-
-            {isLoggingIn && (
-              <Typography variant="body2" sx={{ marginTop: 2 }}>
-                Initiating login process...
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 2 }}>
+                🏋️ FitTracker
               </Typography>
-            )}
-
-            {error && (
-              <Typography color="error" sx={{ marginTop: 2 }}>
-                Error: {error.message || "Authentication error"}
+              <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+                Your Personal Fitness Companion
               </Typography>
-            )}
+              <Typography variant="body1" sx={{ mb: 4, opacity: 0.8 }}>
+                Track your workouts, monitor progress, and achieve your fitness goals with our comprehensive dashboard.
+              </Typography>
+
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleLogin}
+                disabled={isLoggingIn}
+                sx={{
+                  bgcolor: 'white',
+                  color: 'primary.main',
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1.1rem',
+                  fontWeight: 600,
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                  },
+                  '&:disabled': {
+                    bgcolor: 'rgba(255,255,255,0.5)',
+                  }
+                }}
+              >
+                {isLoggingIn ? "Connecting..." : "Get Started"}
+              </Button>
+
+              {isLoggingIn && (
+                <Typography variant="body2" sx={{ mt: 2, opacity: 0.8 }}>
+                  Connecting to your account...
+                </Typography>
+              )}
+
+              {error && (
+                <Typography 
+                  sx={{ 
+                    mt: 2, 
+                    p: 2, 
+                    bgcolor: 'rgba(255,255,255,0.1)', 
+                    borderRadius: 2,
+                    border: '1px solid rgba(255,255,255,0.2)'
+                  }}
+                >
+                  ⚠️ {error.message || "Authentication error"}
+                </Typography>
+              )}
+            </Box>
           </Box>
         )}
-      </Box>
-    </BrowserRouter>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

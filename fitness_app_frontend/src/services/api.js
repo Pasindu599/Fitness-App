@@ -24,8 +24,13 @@ export const getActivities = async () => {
 };
 
 export const addActivity = async (activity) => {
-  const response = await api.post("/activities", activity);
-  return response.data;
+  try {
+    const response = await api.post("/activities", activity);
+    return response.data;
+  } catch (error) {
+    console.error("API Error adding activity:", error);
+    throw error;
+  }
 };
 
 export const getActivityDetail = async (id) => {

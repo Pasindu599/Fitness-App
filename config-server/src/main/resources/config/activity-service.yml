@@ -5,7 +5,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI}
-      database: ${MONGODB_NAME}
+      database: ${ACTIVITY_MONGODB_NAME}
 
   rabbitmq:
     host: localhost

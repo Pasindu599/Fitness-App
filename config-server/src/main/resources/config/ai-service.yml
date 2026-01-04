@@ -5,7 +5,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI}
-      database: ${MONGODB_NAME}
+      database: ${AI_MONGODB_NAME}
 
   rabbitmq:
     host: localhost
@@ -36,4 +36,4 @@ rabbitmq:
 gemini:
   api:
     url: ${GEMINI_API_URL}
-    key: ${GEMINI_API_URL}
+    key: ${GEMINI_API_KEY}
